@@ -17,3 +17,10 @@ def info( argSender, argText1, argText2=None):
         print(newlineStart, intend,argText1,argText2, newlineEnd)
     else:
         print(newlineStart, intend,argText1, newlineEnd)
+        
+def error( argSender, argText1, argText2=None):
+    if isinstance(argText1, list):
+       argText1.insert(0, 'Error:')
+    if isinstance(argText1, str):
+        argText1 = 'Error: ' + argText1
+    info( argSender, argText1, argText2)

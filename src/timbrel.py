@@ -1,29 +1,30 @@
 #!/usr/bin/python3
 
 ########################################################################
-#                                                                      #
-# cubic.py                                                             #
-#                                                                      #
-# Copyright (C) 2015 PJ Singh <psingh.cubic@gmail.com>                 #
-#                                                                      #
+#                                                            
+# timbrel.py                                          
+#                                                                   
+# Copyright (C) 2019 Alexander Gribkovi <https://github.com/sallecta/timbrel>             
+# Copyright (C) 2015 PJ Singh <psingh.cubic@gmail.com>             
+#                                                                      
 ########################################################################
 
 ########################################################################
-#                                                                      #
-# This file is part of Timbrel - Custom Ubuntu ISO Creator.              #
-#                                                                      #
-# Timbrel is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by #
-# the Free Software Foundation, either version 3 of the License, or    #
-# (at your option) any later version.                                  #
-#                                                                      #
-# Timbrel is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of       #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         #
-# GNU General Public License for more details.                         #
-#                                                                      #
-# You should have received a copy of the GNU General Public License    #
-# along with Timbrel. If not, see <http://www.gnu.org/licenses/>.        #
+#                                                                   
+# This file is part of Timbrel - Custom Ubuntu ISO Creator.      
+#                                                                    
+# Timbrel is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by 
+# the Free Software Foundation, either version 3 of the License, or    
+# (at your option) any later version.                               
+#                                                                    
+# Timbrel is distributed in the hope that it will be useful,         
+# but WITHOUT ANY WARRANTY; without even the implied warranty of   
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the     
+# GNU General Public License for more details.                        
+#                                                                    
+# You should have received a copy of the GNU General Public License    
+# along with Timbrel. If not, see <http://www.gnu.org/licenses/>.       
 #                                                                      #
 ########################################################################
 
@@ -75,17 +76,28 @@ def cubic_versionGet():
 try:
     timbrel_log.info(me,'Starting Timbrel')
 
-    root_uid = os.getuid()
-    model.set_root_user_id(root_uid)
+    user_id = os.getuid()
+    if user_id != 0:
+        timbrel_log.error(me,'This program requires root access. Please run as "sudo -H '+__file__+'".')
+        sys.exit(1)
+    model.set_root_user_id(user_id)
     root_gid = os.getgid()
     model.set_root_group_id(root_gid)
 
-    working_directory = sys.argv[1]
+# working directory
+    if len(sys.argv) == 2:
+        if os.path.exists(sys.argv[1]):
+            working_directory = sys.argv[1]
+        else:
+            timbrel_log.info(me,'Directory '+sys.argv[1]+' does not exist. Usigng script location as working directory.')
+            working_directory = timbrel_cfg.path
+    else:
+        working_directory = timbrel_cfg.path
+
     os.chdir(working_directory)
     current_directory = os.getcwd()
     timbrel_log.info(me,'The working directory is', current_directory)
 
-    #uid = int(os.getenv('PKEXEC_UID'))
     uid = int(os.getuid() )
     pw_name, pw_passwd, pw_uid, pw_gid, pw_gecos, pw_dir, pw_shell = pwd.getpwuid(
         uid)
@@ -163,16 +175,12 @@ try:
 
     icon_theme_search_path = icon_theme.get_search_path()
     timbrel_log.info(me,'Replace GTK icon_theme_search_path from ... ',icon_theme_search_path)     
-    # icon_theme_search_path.append(timbrel_cfg.path + '/icons'  )
-    # icon_theme_search_path.append(timbrel_cfg.path + '/icons/gtk+-3.18.9'  )
     icon_theme_search_path = [timbrel_cfg.path + '/icons/gtk+-3.18.9' , timbrel_cfg.path + '/icons' ]     
     Gtk.IconTheme.set_search_path(icon_theme,icon_theme_search_path)
     timbrel_log.info(me,'... to', icon_theme_search_path)  
 
     theme_style = display.get_theme_style(window)
-    #display.update_icon_path(theme_style)
-    timbrel_log.info(me,'debug exit')  
-    # sys.exit()
+    
 #start gtk
     window.show()
 
