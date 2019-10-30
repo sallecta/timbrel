@@ -2,7 +2,7 @@
 
 Custom ubuntu ISO creator (cubic fork)
 
-![Timbrel logo](https://raw.githubusercontent.com/sallecta/timbrel/master/screenshots/timbrel.png)
+![Timbrel main window screenshot](https://raw.githubusercontent.com/sallecta/timbrel/master/screenshots/timbrel-01-main_window.png)
 
 
 # Dependencies

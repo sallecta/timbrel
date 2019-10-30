@@ -267,7 +267,7 @@
               <object class="GtkLabel" id="project_directory_page__title_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Timbrel Ubuntu ISO Creator</property>
+                <property name="label" translatable="yes">Timbrel - Custom Ubuntu ISO Creator</property>
                 <property name="wrap">True</property>
                 <attributes>
                   <attribute name="font-desc" value="Ubuntu Medium 32"/>
