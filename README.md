@@ -15,5 +15,6 @@ sudo apt-get install gir1.2-vte-2.91
 # Run
 
 ```console
-sudo -H $PWD/timbrel.py "$PWD"
+cd src
+sudo -H $PWD/src/timbrel.py "$PWD/src"
 ```
