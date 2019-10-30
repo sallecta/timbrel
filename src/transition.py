@@ -326,8 +326,7 @@ class TransitionThread(Thread):
             #       - handlers.on_clicked__new_project_page__original_iso_image_filepath_filechooser__open_button()
             #       - handlers.on_clicked__new_project_page__custom_iso_image_directory_filechooser__open_button()
             if self.new_page_name == 'terminal_page':
-                transitions.transition__from__new_project_page__to__terminal_page(
-                    self)
+                transitions.transition__from__new_project_page__to__terminal_page(self)
             elif self.new_page_name == 'project_directory_page':
                 transitions.transition__from__new_project_page__to__project_directory_page(
                     self)

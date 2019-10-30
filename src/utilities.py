@@ -93,7 +93,8 @@ NORMAL = '\033[0m'
 
 
 def execute_synchronous(command, thread=None, working_directory=None):
-    timbrel_log.info(me,'Execute synchronously', command)
+    me2=me+': '+'execute_synchronous'
+    timbrel_log.info(me2, command)
 
     result = None
     error = 1
@@ -121,7 +122,8 @@ def execute_synchronous(command, thread=None, working_directory=None):
 
 
 def execute_asynchronous(command, thread=None, working_directory=None):
-    logger.log_data('Execute asynchronously', command)
+    me2=me+': '+'execute_asynchronous'
+    timbrel_log.info(me2, command)
 
     try:
         # Using pexpect.split_command_line removes the spaces in the
@@ -147,28 +149,25 @@ def execute_asynchronous(command, thread=None, working_directory=None):
 
 
 def replace_text_in_file(filepath, search_text, replacement_text):
-    logger.log_data('Replace text in file', filepath)
-    logger.log_data('Search text', search_text)
-    logger.log_data('Replacement text', replacement_text)
+    me2=me+': '+'replace_text_in_file'
+    timbrel_log.info(me2,'Replace text in file', filepath)
+    timbrel_log.info(me2,'Search text', search_text)
+    timbrel_log.info(me2,'Replacement text', replacement_text)
 
     if not filepath:
-        logger.log_data('Cannot replace text', 'File not specified')
+        timbrel_log.info(me2,'Cannot replace text', 'File not specified')
         return
 
     if not os.path.exists(filepath):
-        logger.log_data(
-            'Cannot replace text',
-            'File %s does not exist' % filepath)
+        timbrel_log.error(me2,'File does not exist: ' + filepath)
         return
 
     if not search_text:
-        logger.log_data('Cannot replace text', 'Search text not specified')
+        logger.log_error(me2,'Cannot replace text', 'Search text not specified')
         return
 
     if not replacement_text:
-        logger.log_data(
-            'Cannot replace text',
-            'Replacement text not specified')
+        timbrel_log.error(me2,'Replacement text not specified')
         return
 
     with open(filepath, 'r+') as file:
@@ -180,7 +179,8 @@ def replace_text_in_file(filepath, search_text, replacement_text):
 
 
 def delete_file(filepath, thread):
-    logger.log_data('Delete file', filepath)
+    me2=me+': '+'delete_file'
+    timbrel_log.info(me2, 'Delete file', filepath)
 
     # TODO: Can we use python functions? We need a way to cancel a delete,
     #       operation, and using an external process thread allows that.
@@ -198,14 +198,15 @@ def delete_file(filepath, thread):
         command = 'rm -rf "%s"' % filepath
         result, error = execute_synchronous(command, thread)
         if error:
-            logger.log_data('Error deleting file %s' % filepath, result)
+            timbrel_log.error(me2, 'deleting file ' + filepath, result)
     else:
-        logger.log_data('%s does not exist' % filepath, 'Cannot delete')
+        timbrel_log.info(me2, 'Path does not exist', filepath)
 
 
 def get_directory_size(start_path):
-    logger.log_note('Calculate directory size')
-    logger.log_data('The directory is', start_path)
+    me2=me+': '+'get_directory_size'
+    timbrel_log.info(me2, 'Calculate directory size')
+    timbrel_log.info(me2, 'The directory is', start_path)
 
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
@@ -213,22 +214,23 @@ def get_directory_size(start_path):
             filepath = os.path.join(dirpath, filename)
             total_size += os.path.getsize(filepath)
 
-    # logger.log_data('Directory size is', total_size)
+    timbrel_log.info(me2, 'Directory size is', total_size)
 
     return total_size
 
 
 def get_directory_for_file(filename, start_path):
-    logger.log_data('Get directory for %s in' % filename, start_path)
+    me2=me+': '+'get_directory_for_file'
+    timbrel_log.info(me2, filename, start_path)
 
     directory = ''
     for dirpath, dirnames, filenames in os.walk(start_path):
         if filename in filenames: directory = dirpath
 
     if directory:
-        logger.log_data('%s is in' % filename, directory)
+        timbrel_log.info(me2, 'success')
     else:
-        logger.log_data('%s is not in' % filename, directory)
+        timbrel_log.info(me2, ' file is not in directory')
 
     return directory
 
@@ -239,12 +241,14 @@ def get_directory_for_file(filename, start_path):
 
 
 def set_user_and_group(user_id, group_id):
-    logger.log_data('Change user and group to', '%s:%s' % (user_id, group_id))
+    me2=me+': '+'set_user_and_group'
+    timbrel_log.info(me2, user_id, group_id)
     os.setgid(group_id)
     os.setuid(user_id)
 
 
 def get_current_directory():
+    me2=me+': '+'get_current_directory'
 
     # Vte 2.91 only...
     # Note: on libvte-2.90, this returns the Computer Name and
@@ -260,6 +264,7 @@ def get_current_directory():
 
 
 def get_package_version(package_name):
+    me2=me+': '+'get_package_version'
     command = 'dpkg-query --showformat="${Version}\n" --show "%s"' % package_name
     result, error = execute_synchronous(command)
     return result
@@ -275,7 +280,8 @@ def get_package_version(package_name):
 # TODO: Make creating the configuration object more efficient by storing
 #       it in the model.
 def save_configuration():
-    logger.log_data('Save configuration')
+    me2=me+': '+'save_configuration'
+    timbrel_log.info(me2, 'started')
 
     # Create the configuraton.
     configuration = configparser.ConfigParser(allow_no_value=True)
@@ -380,6 +386,7 @@ def save_configuration():
 
 
 def save_configuration_value(section, key, value):
+    me2=me+': '+'save_configuration_value'
     # Create the configuration.
     configuration = configparser.ConfigParser(allow_no_value=True)
     configuration.optionxform = str
@@ -410,12 +417,13 @@ def save_configuration_value(section, key, value):
 
 
 def is_mounted(iso_image_filepath, iso_image_mount_point):
-    logger.log_note('Check if ISO image is mounted')
+    me2=me+': '+'is_mounted'
+    timbrel_log.info(me2, 'started')
 
     iso_image_filepath = os.path.realpath(iso_image_filepath)
     iso_image_mount_point = os.path.realpath(iso_image_mount_point)
-    logger.log_data('ISO image', iso_image_filepath)
-    logger.log_data('Mount point', iso_image_mount_point)
+    timbrel_log.info(me2, 'ISO image', iso_image_filepath)
+    timbrel_log.info(me2, 'Mount point', iso_image_mount_point)
     command = 'mount'
     result, error = execute_synchronous(command)
     mounted = False
@@ -426,51 +434,49 @@ def is_mounted(iso_image_filepath, iso_image_mount_point):
              re.escape(iso_image_mount_point)),
             result)
         mounted = bool(mount_information)
-    logger.log_data('Is mounted?', mounted)
+    timbrel_log.info(me2, 'Is mounted?', mounted)
     return mounted
 
 
 def mount_iso_image(iso_image_filepath, iso_image_mount_point, thread):
-    logger.log_note('Mount ISO image')
+    me2=me+': '+'mount_iso_image'
+    timbrel_log.info(me2, 'started')
 
     iso_image_filepath = os.path.realpath(iso_image_filepath)
     iso_image_mount_point = os.path.realpath(iso_image_mount_point)
-    logger.log_data('ISO image', iso_image_filepath)
-    logger.log_data('Mount point', iso_image_mount_point)
+    timbrel_log.info(me2, 'ISO image', iso_image_filepath)
+    timbrel_log.info(me2, 'Mount point', iso_image_mount_point)
 
     if os.path.exists(iso_image_mount_point):
         # Unmount existing mount point, just in case it is already
         # mounted.
-        logger.log_data(
-            'Unmount existing mount point if it is mounted',
-            iso_image_mount_point)
+        timbrel_log.info(me2, 'Unmount existing mount point if it is mounted', iso_image_mount_point)
         command = 'umount "%s"' % iso_image_mount_point
         result, error = execute_synchronous(command, thread)
         if error:
-            logger.log_data('Unable to unmount', result)
+            timbrel_log.info(me2, 'Unable to unmount', result)
     else:
         # Create the mount point if it does not exist.
-        logger.log_data(
-            'Create the mount point if it does not exist',
-            iso_image_mount_point)
+        timbrel_log.info(me2, 'Create the mount point if it does not exist', iso_image_mount_point)
         command = 'mkdir "%s"' % iso_image_mount_point
         result, error = execute_synchronous(command, thread)
         if error:
-            logger.log_data('Unable to create the mount point', result)
+            timbrel_log.error(me2, result)
 
     if os.path.exists(iso_image_filepath):
         # Only mount the filepath if it exists.
-        logger.log_data('Mount', iso_image_filepath)
+        timbrel_log.info(me2, 'Mount', iso_image_filepath)
         command = 'mount --options loop "%s" "%s"' % (
             iso_image_filepath,
             iso_image_mount_point)
         result, error = execute_synchronous(command, thread)
         if error:
-            logger.log_data('Unable to mount', result)
+            timbrel_log.error(me2, result)
 
 
 def delete_iso_mount(iso_image_mount_point, thread):
-    logger.log_note('Delete ISO image mount point %s' % iso_image_mount_point)
+    me2=me+': '+'delete_iso_mount'
+    timbrel_log.info(me2, iso_image_mount_point)
 
     iso_image_mount_point = os.path.realpath(iso_image_mount_point)
 
@@ -479,19 +485,19 @@ def delete_iso_mount(iso_image_mount_point, thread):
         # Unmount existing mount point, just in case it is already
         # mounted.
 
-        logger.log_data('Unmount if it is mounted', iso_image_mount_point)
+        timbrel_log.info(me2, 'Unmount if it is mounted', iso_image_mount_point)
         command = 'umount "%s"' % iso_image_mount_point
         result, error = execute_synchronous(command, thread)
         if error:
-            logger.log_data('Unable to unmount', result)
+            timbrel_log.error(me2, 'Unable to unmount', result)
         time.sleep(1.00)
 
         # Delete the mount point.
-        logger.log_data('Delete mount point', iso_image_mount_point)
+        timbrel_log.info(me2, iso_image_mount_point)
         command = 'rm -rf "%s"' % iso_image_mount_point
         result, error = execute_synchronous(command, thread)
         if error:
-            logger.log_data('Unable to delete', result)
+            timbrel_log.error(me2, 'Unable to delete', result)
         time.sleep(1.00)
 
     else:
@@ -505,6 +511,7 @@ def delete_iso_mount(iso_image_mount_point, thread):
 
 
 def get_iso_image_volume_id(iso_image_filepath, thread):
+    me2=me+': '+'get_iso_image_volume_id'
     # logger.log_data('Get ISO image volume id')
     # Get the original ISO image volume id.
     iso_image_filepath = os.path.realpath(iso_image_filepath)
@@ -522,6 +529,7 @@ def get_iso_image_volume_id(iso_image_filepath, thread):
 
 
 def get_iso_image_release_name(iso_image_mount_point, thread):
+    me2=me+': '+'get_iso_image_release_name'
     # logger.log_data('Get ISO image release name')
     iso_image_mount_point = os.path.realpath(iso_image_mount_point)
     # Read the original ISO image README.diskdefines file.
@@ -540,8 +548,24 @@ def get_iso_image_release_name(iso_image_mount_point, thread):
                 1)
     return iso_image_release_name
 
-
 def get_iso_image_disk_name(iso_image_mount_point, thread):
+    # logger.log_data('Get ISO image disk name')
+    iso_image_mount_point = os.path.realpath(iso_image_mount_point)
+    # Read the original ISO image README.diskdefines file.
+    command = 'cat "%s"' % os.path.join(
+        iso_image_mount_point,
+        'README.diskdefines')
+    result, error = execute_synchronous(command, thread)
+    # Get the original ISO image disk name.
+    iso_image_disk_name = 'Unknown iso image disk name'
+    if not error:
+        iso_image_disk_name_information = re.search(r'DISKNAME *(.*)', result)
+        if iso_image_disk_name_information:
+            iso_image_disk_name = iso_image_disk_name_information.group(1)
+    return iso_image_disk_name
+
+def get_casper_relative_directory(iso_image_mount_point, thread):
+    me2=me+': '+'get_casper_relative_directory'
     # logger.log_data('Get ISO image disk name')
     iso_image_mount_point = os.path.realpath(iso_image_mount_point)
     # Read the original ISO image README.diskdefines file.
@@ -559,6 +583,7 @@ def get_iso_image_disk_name(iso_image_mount_point, thread):
 
 
 def get_casper_relative_directory(iso_image_mount_point):
+    me2=me+': '+'get_casper_relative_directory'
     # logger.log_data('Get casper relative directory')
     casper_directory = get_directory_for_file(
         'filesystem.squashfs',
@@ -575,33 +600,37 @@ def get_casper_relative_directory(iso_image_mount_point):
 
 
 def create_custom_iso_image_version_number():
+    me2=me+': '+'create_custom_iso_image_version_number'
     # logger.log_data('Create custom ISO version number')
     return datetime.datetime.now().strftime('%Y.%m.%d')
 
 
 def create_configuration_filepath(project_directory):
+    me2=me+': '+'create_configuration_filepath'
     # logger.log_data('Create configuration filepath')
     return os.path.join(project_directory, 'cubic.conf')
 
 
 def create_original_iso_image_mount_point(project_directory):
+    me2=me+': '+'create_original_iso_image_mount_point'
     # logger.log_data('Create original ISO image mount point')
     return os.path.join(project_directory, 'original-iso-mount')
 
 
 def create_custom_squashfs_directory(project_directory):
+    me2=me+': '+'create_custom_squashfs_directory'
     # logger.log_data('Create custom squashfs directory')
     return os.path.join(project_directory, 'squashfs-root')
 
 
 def create_custom_live_iso_directory(project_directory):
+    me2=me+': '+'create_custom_live_iso_directory'
     # logger.log_data('Create custom live ISO directory')
     return os.path.join(project_directory, 'custom-live-iso')
 
 
-def create_custom_iso_image_filename(
-        original_iso_image_filename,
-        custom_iso_image_version_number):
+def create_custom_iso_image_filename(original_iso_image_filename, custom_iso_image_version_number):
+    me2=me+': '+'create_custom_iso_image_filename'
     logger.log_note('Create custom ISO image filename')
     logger.log_data(
         'The original ISO image filename is',
@@ -722,9 +751,8 @@ def create_custom_iso_image_filename(
     return custom_iso_image_filename
 
 
-def create_custom_iso_image_volume_id(
-        original_iso_image_volume_id,
-        custom_iso_image_version_number):
+def create_custom_iso_image_volume_id(original_iso_image_volume_id, custom_iso_image_version_number):
+    me2=me+': '+'create_custom_iso_image_volume_id'
     logger.log_note('Create custom ISO image volume id')
     logger.log_data(
         'The original ISO image volume id is',
@@ -842,6 +870,7 @@ def create_custom_iso_image_volume_id(
 
 
 def create_custom_iso_image_release_name(original_iso_image_release_name):
+    me2=me+': '+'create_custom_iso_image_release_name'
     # logger.log_data('Create custom ISO image release name')
 
     try:
@@ -859,9 +888,8 @@ def create_custom_iso_image_release_name(original_iso_image_release_name):
     return custom_iso_image_release_name
 
 
-def create_custom_iso_image_disk_name(
-        custom_iso_image_volume_id,
-        custom_iso_image_release_name):
+def create_custom_iso_image_disk_name(custom_iso_image_volume_id, custom_iso_image_release_name):
+    me2=me+': '+'create_custom_iso_image_disk_name'
     # logger.log_note('Create custom ISO image disk name')
 
     if custom_iso_image_volume_id and custom_iso_image_release_name:
@@ -880,6 +908,7 @@ def create_custom_iso_image_disk_name(
 
 
 def create_custom_iso_image_md5_filename_ORIGINAL(custom_iso_image_filename):
+    me2=me+': '+'create_custom_iso_image_md5_filename_ORIGINAL'
     # logger.log_data('Create custom ISO image md5 filename')
 
     try:
@@ -898,6 +927,7 @@ def create_custom_iso_image_md5_filename_ORIGINAL(custom_iso_image_filename):
 
 
 def create_custom_iso_image_md5_filename(custom_iso_image_filename):
+    me2=me+': '+'create_custom_iso_image_md5_filename'
     # logger.log_data('Create custom ISO image md5 filename')
     try:
         # filename_root = os.path.splitext(custom_iso_image_filename)[0]
@@ -920,6 +950,7 @@ def create_custom_iso_image_md5_filename(custom_iso_image_filename):
 
 
 def create_file_details_list():
+    me2=me+': '+'create_file_details_list'
     # logger.log_data('List files to copy')
 
     file_details_list = []
@@ -932,6 +963,7 @@ def create_file_details_list():
 
 
 def copy_files(thread):
+    me2=me+': '+'copy_files'
     logger.log_note('Copy file(s)')
 
     total_files = len(model.uris)
@@ -980,6 +1012,7 @@ def copy_files(thread):
 
 
 def copy_file(filepath, file_number, directory, total_files, thread):
+    me2=me+': '+'copy_file'
     logger.log_data(
         'Copy file',
         'Number %s of %s' % (file_number + 1,
@@ -1058,6 +1091,7 @@ def copy_file(filepath, file_number, directory, total_files, thread):
 
 
 def copy_original_iso_files(thread):
+    me2=me+': '+'copy_original_iso_files'
     logger.log_note('Copy the original ISO files')
 
     # Note: source_path and target_path must end in "/"
@@ -1247,6 +1281,7 @@ def copy_original_iso_files(thread):
 
 
 def extract_squashfs(thread):
+    me2=me+': '+'extract_squashfs'
     logger.log_note('Extract squashfs')
 
     custom_squashfs_directory = os.path.realpath(
@@ -1318,11 +1353,13 @@ def extract_squashfs(thread):
 
 
 def prepare_chroot_environment(thread):
+    me2=me+': '+'prepare_chroot_environment'
 
     _prepare_chroot_environment(thread)
 
 
 def _prepare_chroot_environment_TESTING(thread):
+    me2=me+': '+'_prepare_chroot_environment_TESTING'
 
     logger.log_note('Prepare chroot environment (Testing)')
 
@@ -1331,6 +1368,7 @@ def _prepare_chroot_environment_TESTING(thread):
 # https://lazka.github.io/pgi-docs/#Vte-2.91/classes/Terminal.html
 # https://help.ubuntu.com/community/BasicChroot
 def _prepare_chroot_environment(thread):
+    me2=me+': '+'_prepare_chroot_environment'
     logger.log_note('Prepare chroot environment')
 
     # Removed xhost for bug #1766374
@@ -1464,6 +1502,7 @@ def _prepare_chroot_environment(thread):
 
 
 def enter_chroot_environment(*args):
+    me2=me+': '+'enter_chroot_environment'
 
     _enter_chroot_environment(args)
 
@@ -1471,6 +1510,7 @@ def enter_chroot_environment(*args):
 # This function is used for testing only. It "randomly" decides to enter
 # the chroot environment.
 def _enter_chroot_environment_TESTING(*args):
+    me2=me+': '+'_enter_chroot_environment_TESTING'
     # thread = args[0]
     should_enter_chroot = bool(int(time.strftime('%s')) % 2)
     if should_enter_chroot:
@@ -1490,6 +1530,7 @@ def _enter_chroot_environment_TESTING(*args):
 
 
 def _enter_chroot_environment(*args):
+    me2=me+': '+'_enter_chroot_environment'
     try:
         # thread = args[0]
         print()
@@ -1508,6 +1549,7 @@ def _enter_chroot_environment(*args):
 # https://lazka.github.io/pgi-docs/#Vte-2.91/classes/Terminal.html
 # https://web.archive.org/web/20170311221231/https://lazka.github.io/pgi-docs/Vte-2.91/classes/Terminal.html#Vte.Terminal.feed_child
 def create_chroot_terminal(thread):
+    me2=me+': '+'create_chroot_terminal'
     logger.log_note('Enter chroot environment')
     custom_squashfs_directory = os.path.realpath(
         model.custom_squashfs_directory)
@@ -1609,6 +1651,7 @@ def create_chroot_terminal(thread):
 
 
 def check_chroot(thread):
+    me2=me+': '+'check_chroot'
     logger.log_note('Check chroot environment')
 
     logger.log_data('The terminal pid is', model.terminal_pid)
@@ -1636,6 +1679,7 @@ def check_chroot(thread):
 
 
 def initialize_chroot_environment(thread):
+    me2=me+': '+'initialize_chroot_environment'
     logger.log_note('Initialize chroot environment')
 
     is_chroot = check_chroot(thread)
@@ -1736,6 +1780,7 @@ def initialize_chroot_environment(thread):
 # The approach used here allows any combination of Terminal.feed(), with one or
 # two arguments, and Terminal.feed_child(), with one or two arguments.
 def send_message_to_terminal(text=None):
+    me2=me+': '+'send_message_to_terminal'
 
     terminal = model.builder.get_object('terminal_page__terminal')
 
@@ -1762,6 +1807,7 @@ def send_message_to_terminal(text=None):
 # - feed_child(bytes)
 # If text is none, a new line is sent to the terminal.
 def send_command_to_terminal(text=None):
+    me2=me+': '+'send_command_to_terminal'
 
     terminal = model.builder.get_object('terminal_page__terminal')
 
@@ -1784,6 +1830,7 @@ def send_command_to_terminal(text=None):
 # - feed_child(bytes)
 # Text is sent to the terminal without appending a new line.
 def send_text_to_terminal(text):
+    me2=me+': '+'send_text_to_terminal'
 
     terminal = model.builder.get_object('terminal_page__terminal')
 
@@ -1805,6 +1852,7 @@ def send_text_to_terminal(text):
 
 
 def get_processes_using_directory(directory):
+    me2=me+': '+'get_processes_using_directory'
     directory = os.path.realpath(directory)
     logger.log_data('Get processes that are using directory', directory)
 
@@ -1835,6 +1883,7 @@ def get_processes_using_directory(directory):
 
 
 def kill_processes(pids, exclude_pid=None):
+    me2=me+': '+'kill_processes'
     while pids:
         pid = pids.pop()
         if pid != exclude_pid:
@@ -1847,6 +1896,7 @@ def kill_processes(pids, exclude_pid=None):
 
 
 def get_mount_points_in_directory(directory, thread):
+    me2=me+': '+'get_mount_points_in_directory'
     # directory = os.path.realpath(directory)
     logger.log_data('Get mount points in directory', directory)
 
@@ -1876,6 +1926,7 @@ def get_mount_points_in_directory(directory, thread):
 
 
 def unmount_mount_points(mount_points):
+    me2=me+': '+'unmount_mount_points'
     logger.log_data('Unmount mount points')
     while mount_points:
         mount_point = mount_points.pop()
@@ -1890,6 +1941,7 @@ def unmount_mount_points(mount_points):
 
 
 def exit_chroot_environment(thread):
+    me2=me+': '+'exit_chroot_environment'
     # http://askubuntu.com/questions/162319/how-do-i-stop-all-processes-in-a-chroot
 
     logger.log_note('Exit chroot environment')
@@ -2045,6 +2097,7 @@ def exit_chroot_environment(thread):
 
 
 def create_kernel_details_list(*directories):
+    me2=me+': '+'create_kernel_details_list'
     logger.log_note('Create kernel details list')
 
     # Create a consolidated kernel details list.
@@ -2200,6 +2253,7 @@ def create_kernel_details_list(*directories):
 
 # For debugging only.
 def print_kernel_details_list(kernel_details_list):
+    me2=me+': '+'print_kernel_details_list'
     total = len(kernel_details_list)
     for index, kernel_details in enumerate(kernel_details_list):
         print_kernel_details(kernel_details, index, total)
@@ -2207,6 +2261,7 @@ def print_kernel_details_list(kernel_details_list):
 
 # For debugging only.
 def print_kernel_details(kernel_details, index, total):
+    me2=me+': '+'print_kernel_details'
     print(
         '| '
         '{:13.13s} | '
@@ -2235,6 +2290,7 @@ def print_kernel_details(kernel_details, index, total):
 
 
 def get_current_kernel_version_name():
+    me2=me+': '+'get_current_kernel_version_name'
     version_name = None
     try:
         version_information = re.search(
@@ -2248,10 +2304,12 @@ def get_current_kernel_version_name():
 
 
 def get_current_kernel_release_name():
+    me2=me+': '+'get_current_kernel_release_name'
     return platform.release()
 
 
 def is_server_image():
+    me2=me+': '+'is_server_image'
     # Guess if we are customizing a server image by checking the file
     # name, volume id, or disk name. For example:
     # - original_iso_image_filename = ubuntu-18.04-live-server-amd64.iso
@@ -2274,6 +2332,7 @@ def is_server_image():
 
 
 def update_kernel_details_list_for_vmlinuz(directory, kernel_details_list):
+    me2=me+': '+'update_kernel_details_list_for_vmlinuz'
 
     logger.log_note('Update kernel details list for vmlinuz')
     filepath_pattern = os.path.join(directory, 'vmlinuz*')
@@ -2300,9 +2359,8 @@ def update_kernel_details_list_for_vmlinuz(directory, kernel_details_list):
             kernel_details_list)
 
 
-def update_kernel_details_list_for_vmlinuz_EXPERIMENT(
-        directory,
-        kernel_details_list):
+def update_kernel_details_list_for_vmlinuz_EXPERIMENT(directory, kernel_details_list):
+    me2=me+': '+'update_kernel_details_list_for_vmlinuz_EXPERIMENT'
 
     logger.log_note('Update kernel details list for vmlinuz')
     filepath_pattern = os.path.join(directory, 'vmlinuz*')
@@ -2330,9 +2388,8 @@ def update_kernel_details_list_for_vmlinuz_EXPERIMENT(
             kernel_details_list)
 
 
-def update_kernel_details_list_for_vmlinuz_ORIGINAL(
-        directory,
-        kernel_details_list):
+def update_kernel_details_list_for_vmlinuz_ORIGINAL(directory, kernel_details_list):
+    me2=me+': '+'update_kernel_details_list_for_vmlinuz_ORIGINAL'
 
     logger.log_note('Update kernel details list for vmlinuz')
     filepath_pattern = os.path.join(directory, 'vmlinuz*')
@@ -2355,12 +2412,8 @@ def update_kernel_details_list_for_vmlinuz_ORIGINAL(
             kernel_details_list)
 
 
-def update_kernel_details_for_vmlinuz(
-        version_integers,
-        version_name,
-        vmlinuz_filename,
-        directory,
-        kernel_details_list):
+def update_kernel_details_for_vmlinuz(version_integers, version_name, vmlinuz_filename, directory, kernel_details_list):
+    me2=me+': '+'update_kernel_details_for_vmlinuz'
 
     logger.log_note('Search kernel details list for matching version')
     logger.log_data('• Kernel version', version_name)
@@ -2475,6 +2528,7 @@ def update_kernel_details_for_vmlinuz(
 
 
 def get_vmlinuz_version_name(filepath):
+    me2=me+': '+'get_vmlinuz_version_name'
 
     # logger.log_data('Get vmlinuz version', filepath)
     version_name = (
@@ -2486,6 +2540,7 @@ def get_vmlinuz_version_name(filepath):
 
 
 def _get_vmlinuz_version_name_from_file_name(filepath):
+    me2=me+': '+'_get_vmlinuz_version_name_from_file_name'
 
     logger.log_data('Get vmlinuz version from file name', filepath)
     filename = os.path.basename(filepath)
@@ -2496,6 +2551,7 @@ def _get_vmlinuz_version_name_from_file_name(filepath):
 
 
 def _get_vmlinuz_version_name_from_file_type(filepath):
+    me2=me+': '+'_get_vmlinuz_version_name_from_file_type'
 
     logger.log_data('Get vmlinuz version from file type', filepath)
     command = 'file "%s"' % filepath
@@ -2513,6 +2569,7 @@ def _get_vmlinuz_version_name_from_file_type(filepath):
 
 
 def _get_vmlinuz_version_name_from_file_contents(filepath):
+    me2=me+': '+'_get_vmlinuz_version_name_from_file_contents'
 
     logger.log_data('Get vmlinuz version from file contents', filepath)
     version_name = None
@@ -2544,6 +2601,7 @@ def _get_vmlinuz_version_name_from_file_contents(filepath):
 
 
 def update_kernel_details_list_for_initrd(directory, kernel_details_list):
+    me2=me+': '+'update_kernel_details_list_for_initrd'
 
     logger.log_note('Update kernel details list for initrd')
     filepath_pattern = os.path.join(directory, 'initrd*')
@@ -2584,9 +2642,8 @@ def update_kernel_details_list_for_initrd(directory, kernel_details_list):
             kernel_details_list)
 
 
-def get_vmlinuz_version_from_kernel_details_list(
-        kernel_details_list,
-        directory):
+def get_vmlinuz_version_from_kernel_details_list( kernel_details_list,  directory):
+    me2=me+': '+'get_vmlinuz_version_from_kernel_details_list'
 
     # The kernel_details is:
     # 0: version_integers
@@ -2608,9 +2665,8 @@ def get_vmlinuz_version_from_kernel_details_list(
     return version_name
 
 
-def update_kernel_details_list_for_initrd_EXPERIMENT(
-        directory,
-        kernel_details_list):
+def update_kernel_details_list_for_initrd_EXPERIMENT( directory, kernel_details_list):
+    me2=me+': '+'update_kernel_details_list_for_initrd_EXPERIMENT'
 
     logger.log_note('Update kernel details list for initrd')
     filepath_pattern = os.path.join(directory, 'initrd*')
@@ -2638,9 +2694,8 @@ def update_kernel_details_list_for_initrd_EXPERIMENT(
             kernel_details_list)
 
 
-def update_kernel_details_list_for_initrd_ORIGINAL(
-        directory,
-        kernel_details_list):
+def update_kernel_details_list_for_initrd_ORIGINAL(  directory, kernel_details_list):
+    me2=me+': '+'update_kernel_details_list_for_initrd_ORIGINAL'
 
     logger.log_note('Update kernel details list for initrd')
     filepath_pattern = os.path.join(directory, 'initrd*')
@@ -2663,12 +2718,8 @@ def update_kernel_details_list_for_initrd_ORIGINAL(
             kernel_details_list)
 
 
-def update_kernel_details_for_initrd(
-        version_integers,
-        version_name,
-        initrd_filename,
-        directory,
-        kernel_details_list):
+def update_kernel_details_for_initrd( version_integers, version_name, initrd_filename, directory,  kernel_details_list):
+    me2=me+': '+'update_kernel_details_for_initrd'
 
     logger.log_note('Search kernel details list for matching version')
     logger.log_data('• Kernel version', version_name)
@@ -2783,6 +2834,7 @@ def update_kernel_details_for_initrd(
 
 
 def get_initrd_version_name(filepath):
+    me2=me+': '+'get_initrd_version_name'
 
     # logger.log_data('Get initrd version', filepath)
     version_name = (
@@ -2794,6 +2846,7 @@ def get_initrd_version_name(filepath):
 
 
 def _get_initrd_version_name_from_file_name(filepath):
+    me2=me+': '+'_get_initrd_version_name_from_file_name'
 
     logger.log_data('Get initrd version from file name', filepath)
     filename = os.path.basename(filepath)
@@ -2804,6 +2857,7 @@ def _get_initrd_version_name_from_file_name(filepath):
 
 
 def _get_initrd_version_name_from_file_type(filepath):
+    me2=me+': '+'_get_initrd_version_name_from_file_type'
 
     logger.log_data('Get initrd version from file type', filepath)
     command = 'file "%s"' % filepath
@@ -2821,6 +2875,7 @@ def _get_initrd_version_name_from_file_type(filepath):
 
 
 def _get_initrd_version_name_from_file_contents(filepath):
+    me2=me+': '+'_get_initrd_version_name_from_file_contents'
 
     logger.log_data('Get initrd version from file contents', filepath)
     version_name = None
@@ -2861,6 +2916,7 @@ def _get_initrd_version_name_from_file_contents(filepath):
 
 
 def is_exists_filesystem_manifest_remove(filename):
+    me2=me+': '+'is_exists_filesystem_manifest_remove'
 
     # Check custom live iso directory
     directory = os.path.realpath(model.custom_live_iso_directory)
@@ -2885,6 +2941,7 @@ def is_exists_filesystem_manifest_remove(filename):
 
 
 def create_installed_packages_list(thread):
+    me2=me+': '+'create_installed_packages_list'
 
     logger.log_note('Create list of installed packages')
 
@@ -2905,6 +2962,7 @@ def create_installed_packages_list(thread):
 
 
 def create_filesystem_manifest_file(installed_packages_list):
+    me2=me+': '+'create_filesystem_manifest_file'
 
     logger.log_note('Create new filesystem manifest file')
 
@@ -2921,6 +2979,7 @@ def create_filesystem_manifest_file(installed_packages_list):
 
 
 def get_removable_packages_list(filename):
+    me2=me+': '+'get_removable_packages_list'
 
     # Read filesystem.manifest-remove to get list of packages to remove.
     removable_packages_list = []
@@ -2937,10 +2996,8 @@ def get_removable_packages_list(filename):
     return removable_packages_list
 
 
-def create_package_details_list(
-        installed_packages_list,
-        removable_packages_list_1,
-        removable_packages_list_2):
+def create_package_details_list(installed_packages_list, removable_packages_list_1, removable_packages_list_2):
+    me2=me+': '+'create_package_details_list'
     logger.log_note('Create package details list')
 
     # List installed packages and mark packages that will be removed.
@@ -3011,6 +3068,7 @@ def create_package_details_list(
 
 
 def create_typical_removable_packages_list():
+    me2=me+': '+'create_typical_removable_packages_list'
     logger.log_note('Create typical removable packages list')
 
     listore_name = 'options_page__package_manifest_tab__liststore'
@@ -3032,6 +3090,7 @@ def create_typical_removable_packages_list():
 
 
 def create_minimal_removable_packages_list():
+    me2=me+': '+'create_minimal_removable_packages_list'
     logger.log_note('Create minimal removable packages list')
 
     listore_name = 'options_page__package_manifest_tab__liststore'
@@ -3054,6 +3113,7 @@ def create_minimal_removable_packages_list():
 
 # TODO: This function is not used.
 def create_removable_packages_list(listore_name, index):
+    me2=me+': '+'create_removable_packages_list'
     logger.log_note('Get removable packages list from user selections')
     logger.log_data('Get user selections from', listore_name)
     liststore = model.builder.get_object(listore_name)
@@ -3073,6 +3133,7 @@ def create_removable_packages_list(listore_name, index):
 
 
 def create_filesystem_manifest_remove_file(filename, removable_packages_list):
+    me2=me+': '+'create_filesystem_manifest_remove_file'
     logger.log_note('Create new filesystem manifest remove file')
 
     custom_live_iso_directory = os.path.realpath(
@@ -3098,6 +3159,7 @@ def create_filesystem_manifest_remove_file(filename, removable_packages_list):
 
 
 def save_stack_buffers(stack_name):
+    me2=me+': '+'save_stack_buffers'
 
     stack = model.builder.get_object(stack_name)
     scrolled_windows = stack.get_children()
@@ -3138,6 +3200,7 @@ def save_stack_buffers(stack_name):
 # This function identifies the selected kernel, then replaces text in the boot
 # configurations based on this selection.
 def update_and_save_boot_configurations():
+    me2=me+': '+'update_and_save_boot_configurations'
 
     logger.log_data('Update boot configurations for Ubuntu 14.04')
 
@@ -3205,6 +3268,7 @@ def update_and_save_boot_configurations():
 
 
 def copy_vmlinuz_and_initrd_files(thread):
+    me2=me+': '+'copy_vmlinuz_and_initrd_files'
 
     logger.log_note('Update ISO boot files')
 
@@ -3297,12 +3361,14 @@ def copy_vmlinuz_and_initrd_files(thread):
 
 
 def delete_files_with_pattern(pattern):
+    me2=me+': '+'delete_files_with_pattern'
     logger.log_data('Delete existig  files with pattern', pattern)
     # TODO: Make this code more clear.
     [os.remove(delete_filepath) for delete_filepath in glob.glob(pattern)]
 
 
 def calculate_vmlinuz_filename(filepath):
+    me2=me+': '+'calculate_vmlinuz_filename'
 
     # Just use vmlinuz (instead of vmlinuz or vmlinuz.efi).
     filename = 'vmlinuz'
@@ -3311,6 +3377,7 @@ def calculate_vmlinuz_filename(filepath):
 
 
 def calculate_initrd_filename(filepath):
+    me2=me+': '+'calculate_initrd_filename'
 
     # Determine extension for initrd file.
     # Use initrd.lz, initrd.gz, or initrd depending on the compression type.
@@ -3331,12 +3398,8 @@ def calculate_initrd_filename(filepath):
     return filename
 
 
-def copy_boot_file(
-        source_filepath,
-        file_number,
-        target_filepath,
-        total_files,
-        thread):
+def copy_boot_file(source_filepath, file_number, target_filepath, total_files, thread):
+    me2=me+': '+'copy_boot_file'
     logger.log_data(
         'Copy file',
         'Number %s of %s' % (file_number + 1,
@@ -3399,11 +3462,13 @@ def copy_boot_file(
 
 
 def create_squashfs(thread):
+    me2=me+': '+'create_squashfs'
 
     _create_squashfs(thread)
 
 
 def _create_squashfs_TESTING(thread):
+    me2=me+': '+'_create_squashfs_TESTING'
     logger.log_note('Create squashfs (Testing)')
 
     custom_squashfs_directory = os.path.realpath(
@@ -3421,6 +3486,7 @@ def _create_squashfs_TESTING(thread):
 
 
 def _create_squashfs(thread):
+    me2=me+': '+'_create_squashfs'
     logger.log_note('Create squashfs')
 
     custom_squashfs_directory = os.path.realpath(
@@ -3533,6 +3599,7 @@ def _create_squashfs(thread):
 
 
 def update_filesystem_size(thread):
+    me2=me+': '+'update_filesystem_size'
     logger.log_note('Update filesystem size')
 
     custom_squashfs_directory = os.path.realpath(
@@ -3568,6 +3635,7 @@ def update_filesystem_size(thread):
 
 
 def update_disk_name():
+    me2=me+': '+'update_disk_name'
     logger.log_note('Update disk name')
 
     try:
@@ -3587,6 +3655,7 @@ def update_disk_name():
 
 
 def update_disk_info():
+    me2=me+': '+'update_disk_info'
     logger.log_note('Update disk information')
 
     try:
@@ -3609,6 +3678,7 @@ def update_disk_info():
 
 
 def calculate_md5_hash_for_file(filepath, blocksize=2**20):
+    me2=me+': '+'calculate_md5_hash_for_file'
     # filepath = os.path.realpath(filepath)
     hash = hashlib.md5()
     with open(filepath, 'rb') as file:
@@ -3619,10 +3689,8 @@ def calculate_md5_hash_for_file(filepath, blocksize=2**20):
     return hash.hexdigest()
 
 
-def update_md5_checksums_WITHOUT_PROGRESS(
-        checksums_filepath,
-        start_directory,
-        exclude_paths):
+def update_md5_checksums_WITHOUT_PROGRESS( checksums_filepath, start_directory, exclude_paths):
+    me2=me+': '+'update_md5_checksums_WITHOUT_PROGRESS'
     logger.log_note('Update md5 sums')
     checksums_filepath = os.path.realpath(checksums_filepath)
     start_directory = os.path.realpath(start_directory)
@@ -3646,6 +3714,7 @@ def update_md5_checksums_WITHOUT_PROGRESS(
 
 
 def update_md5_checksums(checksums_filepath, start_directory, exclude_paths):
+    me2=me+': '+'update_md5_checksums'
     logger.log_note('Update MD5 checksums')
     checksums_filepath = os.path.realpath(checksums_filepath)
     start_directory = os.path.realpath(start_directory)
@@ -3686,6 +3755,7 @@ def update_md5_checksums(checksums_filepath, start_directory, exclude_paths):
 
 
 def count_lines(filepath, thread):
+    me2=me+': '+'count_lines'
     # filepath = os.path.realpath(filepath)
     command = 'wc --lines "%s"' % filepath
     ## execute_asynchronous(command, thread)
@@ -3705,6 +3775,7 @@ def count_lines(filepath, thread):
 
 
 def create_iso_image(thread):
+    me2=me+': '+'create_iso_image'
 
     logger.log_note('Create ISO image')
 
@@ -3862,6 +3933,7 @@ def create_iso_image(thread):
 
 
 def calculate_md5_hash_for_iso():
+    me2=me+': '+'calculate_md5_hash_for_iso'
     logger.log_note('Calculate md5 sum')
 
     custom_iso_image_filepath = os.path.realpath(

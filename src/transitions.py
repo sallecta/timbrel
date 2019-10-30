@@ -28,7 +28,7 @@
 ########################################################################
 
 import display
-import handlers
+import timbrel_handlers
 import logger
 import model
 import utilities
@@ -1872,7 +1872,7 @@ def _transition__from__unsquashfs_page__to__terminal_page(thread):
         terminal = model.builder.get_object('terminal_page__terminal')
         handler_id = terminal.connect(
             'child-exited',
-            handlers.on_child_exited__terminal_page)
+            timbrel_handlers.on_child_exited__terminal_page)
         model.set_handler_id(handler_id)
         # Enable input to the terminal.
         display.set_sensitive('terminal_page__terminal', True)
@@ -2676,7 +2676,7 @@ def transition__from__options_page__to__terminal_page(thread):
         terminal = model.builder.get_object('terminal_page__terminal')
         handler_id = terminal.connect(
             'child-exited',
-            handlers.on_child_exited__terminal_page)
+            timbrel_handlers.on_child_exited__terminal_page)
         model.set_handler_id(handler_id)
         # Enable input to the terminal.
         display.set_sensitive('terminal_page__terminal', True)
@@ -2986,7 +2986,7 @@ def transition__from__terminal_page__to__terminal_page(thread):
         terminal = model.builder.get_object('terminal_page__terminal')
         handler_id = terminal.connect(
             'child-exited',
-            handlers.on_child_exited__terminal_page)
+            timbrel_handlers.on_child_exited__terminal_page)
         model.set_handler_id(handler_id)
         # Enable input to the terminal.
         display.set_sensitive('terminal_page__terminal', True)

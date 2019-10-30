@@ -1,36 +1,36 @@
 #!/usr/bin/python3
 
 ########################################################################
-#                                                                      #
-# handlers.py                                                          #
-#                                                                      #
-# Copyright (C) 2015 PJ Singh <psingh.cubic@gmail.com>                 #
-#                                                                      #
+#                                                            
+# timbrel_handlers.py                                          
+#                                                                   
+# Copyright (C) 2019 Alexander Gribkov <https://github.com/sallecta/timbrel>             
+# Copyright (C) 2015 PJ Singh <psingh.cubic@gmail.com>             
+#                                                                      
 ########################################################################
 
 ########################################################################
-#                                                                      #
-# This file is part of Timbrel - Custom Ubuntu ISO Creator.              #
-#                                                                      #
-# Timbrel is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by #
-# the Free Software Foundation, either version 3 of the License, or    #
-# (at your option) any later version.                                  #
-#                                                                      #
-# Timbrel is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of       #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         #
-# GNU General Public License for more details.                         #
-#                                                                      #
-# You should have received a copy of the GNU General Public License    #
-# along with Timbrel. If not, see <http://www.gnu.org/licenses/>.        #
+#                                                                   
+# This file is part of Timbrel - Custom Ubuntu ISO Creator.      
+#                                                                    
+# Timbrel is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by 
+# the Free Software Foundation, either version 3 of the License, or    
+# (at your option) any later version.                               
+#                                                                    
+# Timbrel is distributed in the hope that it will be useful,         
+# but WITHOUT ANY WARRANTY; without even the implied warranty of   
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the     
+# GNU General Public License for more details.                        
+#                                                                    
+# You should have received a copy of the GNU General Public License    
+# along with Timbrel. If not, see <http://www.gnu.org/licenses/>.       
 #                                                                      #
 ########################################################################
-me='handlers.py'
+me='timbrel_handlers.py'
 import timbrel_log
 
 import display
-import logger
 import model
 import transition
 import utilities
@@ -72,23 +72,23 @@ def on_style_updated(window):
 
 def on_clicked__password_dialog__cancel_button(widget):
 
-    logger.log_data('Button clicked', 'Password Cancel')
+    timbrel_log.info(me,'Button clicked:', 'Password Cancel')
 
     display.main_quit()
 
 
 def on_clicked__password_dialog__ok_button(widget):
 
-    logger.log_data('Button clicked', 'Password OK')
+    timbrel_log.info(me,'Button clicked:', 'Password OK')
 
     entry = model.builder.get_object('password_dialog__password_entry')
     password = entry.get_text()
-    logger.log_data('The password is', password)
+    timbrel_log.info(me,'The password is', password)
 
 
 def on_destroy__password_dialog(*args):
 
-    logger.log_data('Button clicked', 'Password Dialog Delete')
+    timbrel_log.info(me,'Button clicked:', 'Password Dialog Delete')
 
     display.main_quit()
 
@@ -100,7 +100,7 @@ def on_destroy__password_dialog(*args):
 
 def on_destroy(*args):
 
-    logger.log_data('Button clicked', 'Window Exit')
+    timbrel_log.info(me,'Button clicked:', 'Window Exit')
 
     model.transition_thread = transition.TransitionThread(
         model.page_name,
@@ -111,7 +111,7 @@ def on_destroy(*args):
 
 def on_clicked__quit_button(widget):
 
-    logger.log_data('Button clicked', 'Quit')
+    timbrel_log.info(me,'Button clicked:', 'Quit')
 
     model.transition_thread = transition.TransitionThread(
         model.page_name,
@@ -133,7 +133,7 @@ def on_clicked__next_button(widget):
     # Repackage ISO Page
     # Finish Page
 
-    logger.log_data('Button clicked', 'Next')
+    timbrel_log.info(me,'Button clicked:', 'Next')
 
     new_page_name = None
 
@@ -169,9 +169,7 @@ def on_clicked__next_button(widget):
     elif model.page_name == 'finish_page':
         new_page_name = 'exit'
     else:
-        logger.log_data(
-            'Error. Next page for the current page is not defined',
-            model.page_name)
+        timbrel_log.error(me,'Next page for the current page is not defined', model.page_name)
 
     model.transition_thread = transition.TransitionThread(
         model.page_name,
@@ -192,7 +190,7 @@ def on_clicked__back_button(widget):
     # Repackage ISO Page
     # Finish Page
 
-    logger.log_data('Button clicked', 'Back')
+    timbrel_log.info(me,'Button clicked:', 'Back')
 
     new_page_name = None
 
@@ -226,16 +224,12 @@ def on_clicked__back_button(widget):
             # - was selected on the Existing Project page.
             new_page_name = 'terminal_page'
         else:
-            logger.log_data(
-                'Error. Back page for the current page is not defined',
-                model.page_name)
+            timbrel_log.error(me,'Back page for the current page is not defined', model.page_name)
     elif model.page_name == 'repackage_iso_page':
         new_page_name = 'options_page'
     else:
         # Error
-        logger.log_data(
-            'Error. Back page for the current page is not defined',
-            model.page_name)
+        timbrel_log.error(me,'Error. Back page for the current page is not defined',model.page_name)
 
     model.transition_thread = transition.TransitionThread(
         model.page_name,
@@ -868,7 +862,7 @@ def on_clicked__delete_project_page__custom_iso_image_directory_open_button(
     # subprocess.Popen(['xdg-open', model.custom_iso_image_directory])
     # process = subprocess.Popen(['xdg-open', model.custom_iso_image_directory], preexec_fn=utilities.set_user_and_group(model.user_id, model.group_id))
     # subprocess.call(['xdg-open', model.custom_iso_image_directory])
-    # logger.log_data('The user, group for the current process is', 'User %s, Group %s' % (os.getuid(), os.getgid()))
+    # timbrel_log.info(me,'The user, group for the current process is', 'User %s, Group %s' % (os.getuid(), os.getgid()))
     return
 
 
@@ -879,7 +873,7 @@ def on_clicked__delete_project_page__custom_iso_image_md5_directory_open_button(
     # subprocess.Popen(['xdg-open', model.custom_iso_image_directory])
     # process = subprocess.Popen(['xdg-open', model.custom_iso_image_directory], preexec_fn=utilities.set_user_and_group(model.user_id, model.group_id))
     # subprocess.call(['xdg-open', model.custom_iso_image_directory])
-    # logger.log_data('The user, group for the current process is', 'User %s, Group %s' % (os.getuid(), os.getgid()))
+    # timbrel_log.info(me,'The user, group for the current process is', 'User %s, Group %s' % (os.getuid(), os.getgid()))
     return
 
 
@@ -890,7 +884,7 @@ def on_clicked__delete_project_page__custom_iso_image_md5_directory_open_button(
 
 def on_child_exited__terminal_page(*args):
 
-    logger.log_data('Terminal', 'exited')
+    timbrel_log.info(me,'Terminal', 'exited')
 
     # TODO: When the user clicks the Next button on the terminal page, the
     #       chroot environment exits. Consequently the terminal exits,
@@ -916,7 +910,7 @@ def on_drag_data_received__terminal_page(
         info,
         drag_time):
 
-    logger.log_data('Drag data received for', 'terminal_page')
+    timbrel_log.info(me,'Drag data received for', 'terminal_page')
 
     # Gtk.SelectionData
     # https://lazka.github.io/pgi-docs/#Gtk-3.0/classes/SelectionData.html
@@ -925,7 +919,7 @@ def on_drag_data_received__terminal_page(
     # The data type is....................... text/plain
     atom = data.get_data_type()
     data_type = str(atom)
-    logger.log_data('The data type is', data_type)
+    timbrel_log.info(me,'The data type is', data_type)
 
     text = data.get_text()
 
@@ -944,7 +938,7 @@ def on_button_press_event__terminal_page(widget, event):
 
     if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
 
-        logger.log_data('Mouse button 3 pressed for', 'terminal_page')
+        timbrel_log.info(me,'Mouse button 3 pressed for', 'terminal_page')
 
         terminal = model.builder.get_object('terminal_page__terminal')
         terminal_has_selection = terminal.get_has_selection()
@@ -1045,7 +1039,7 @@ def on_button_release_event__terminal_page__paste_file_menuitem(*args):
 def on_toggled__options_page__linux_kernels_tab__radiobutton(widget, row):
 
     selected_index = int(row)
-    logger.log_data('The selected kernel is item number', selected_index)
+    timbrel_log.info(me,'The selected kernel is item number', selected_index)
 
     # 0: version_name
     # 1: vmlinuz_filename
@@ -1510,11 +1504,11 @@ def on_clicked__options_page__preseed_tab__create_grid__button(widget):
 
             # Item already exists in the stack.
 
-            logger.log_data('Item already exists in the stack', stack_name)
+            timbrel_log.info(me,'Item already exists in the stack', stack_name)
             title = stack.child_get_property(scrolled_window, 'title')
-            logger.log_note('Item already in the stack')
-            logger.log_data('The title is', title)
-            logger.log_data('The name (filepath) is', filepath)
+            timbrel_log.info(me,'Item already in the stack')
+            timbrel_log.info(me,'The title is', title)
+            timbrel_log.info(me,'The name (filepath) is', filepath)
             label = model.builder.get_object(
                 'options_page__preseed_tab__create_grid__error_label')
             label.set_text('Error. A file with this name already exists.')
@@ -1523,10 +1517,10 @@ def on_clicked__options_page__preseed_tab__create_grid__button(widget):
 
             # Add a new item to the stack.
 
-            logger.log_data('Add a new item to stack', stack_name)
+            timbrel_log.info(me,'Add a new item to stack', stack_name)
             title = '/%s' % os.path.join('preseed', filename)
-            logger.log_data('The title is', title)
-            logger.log_data('The name (filepath) is', filepath)
+            timbrel_log.info(me,'The title is', title)
+            timbrel_log.info(me,'The name (filepath) is', filepath)
 
             # Create a new scrolled window.
             builder_temp = Gtk.Builder.new_from_file('scrolled_window.ui')
@@ -1623,9 +1617,9 @@ def on_clicked__options_page__preseed_tab__delete_grid__button(widget):
     title = stack.child_get_property(scrolled_window, 'title')
     filepath = stack.child_get_property(scrolled_window, 'name')
 
-    logger.log_data('Remove item from stack', stack_name)
-    logger.log_data('The title is', title)
-    logger.log_data('The name (filepath) is', filepath)
+    timbrel_log.info(me,'Remove item from stack', stack_name)
+    timbrel_log.info(me,'The title is', title)
+    timbrel_log.info(me,'The name (filepath) is', filepath)
 
     # Only flag the file for deletion if it exits.
     if os.path.exists(filepath): model.delete_list.append(filepath)
@@ -1770,5 +1764,5 @@ def on_clicked__finish_page__custom_iso_image_directory_open_button(widget):
     # subprocess.Popen(['xdg-open', model.custom_iso_image_directory])
     # process = subprocess.Popen(['xdg-open', model.custom_iso_image_directory], preexec_fn=utilities.set_user_and_group(model.user_id, model.group_id))
     # subprocess.call(['xdg-open', model.custom_iso_image_directory])
-    # logger.log_data('The user, group for the current process is', 'User %s, Group %s' % (os.getuid(), os.getgid()))
+    # timbrel_log.info(me,'The user, group for the current process is', 'User %s, Group %s' % (os.getuid(), os.getgid()))
     return

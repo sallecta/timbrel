@@ -4,7 +4,7 @@
 #                                                            
 # timbrel.py                                          
 #                                                                   
-# Copyright (C) 2019 Alexander Gribkovi <https://github.com/sallecta/timbrel>             
+# Copyright (C) 2019 Alexander Gribkov <https://github.com/sallecta/timbrel>             
 # Copyright (C) 2015 PJ Singh <psingh.cubic@gmail.com>             
 #                                                                      
 ########################################################################
@@ -27,7 +27,7 @@
 # along with Timbrel. If not, see <http://www.gnu.org/licenses/>.       
 #                                                                      #
 ########################################################################
-
+me='timbrel.py'
 
 import gi
 gi.require_version('Gdk', '3.0')
@@ -47,14 +47,11 @@ import traceback
 
 import timbrel_cfg
 import timbrel_log
+import timbrel_handlers
 
-import logger
 import display
-import handlers
 import model
 import utilities
-
-me='timbrel.py'
 
 try:
     gi.require_version('GtkSource', '4')
@@ -141,7 +138,7 @@ try:
     except FileNotFoundError:
         pass
 
-    builder.connect_signals(handlers)
+    builder.connect_signals(timbrel_handlers)
 
     model.set_page_name('project_directory_page')
     
@@ -183,21 +180,11 @@ try:
     
 #start gtk
     window.show()
-
     Gtk.main()
 
 except IndexError as exception:
-    logger.log_step(
-        'Error.'
-    )
-    logger.log_data('The tracekback is', traceback.format_exc())
+    timbrel_log.error(me,'The tracekback is', traceback.format_exc())
 except TypeError as exception:
-    logger.log_step(
-        'Error.'
-    )
-    logger.log_data('The tracekback is', traceback.format_exc())
+    timbrel_log.error(me,'The tracekback is', traceback.format_exc())
 except Exception as exception:
-    logger.log_step(
-        'Error.'
-    )
-    logger.log_data('The tracekback is', traceback.format_exc())
+    timbrel_log.error(me,'The tracekback is', traceback.format_exc())
