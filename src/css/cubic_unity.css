@@ -1,0 +1,92 @@
+/******************************************************************************/
+/*                                                                            */
+/* timbrel_unity.css                                                            */
+/*                                                                            */
+/* Copyright (C) 2015 PJ Singh <psingh.cubic@gmail.com>                       */
+/*                                                                            */
+/******************************************************************************/
+
+/******************************************************************************/
+/*                                                                            */
+/* This file is part of Timbrel - Custom Ubuntu ISO Creator.                    */
+/*                                                                            */
+/* Timbrel is free software: you can redistribute it and/or modify              */
+/* it under the terms of the GNU General Public License as published by       */
+/* the Free Software Foundation, either version 3 of the License, or          */
+/* (at your option) any later version.                                        */
+/*                                                                            */
+/* Timbrel is distributed in the hope that it will be useful,                   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of             */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               */
+/* GNU General Public License for more details.                               */
+/*                                                                            */
+/* You should have received a copy of the GNU General Public License          */
+/* along with Timbrel. If not, see <http://www.gnu.org/licenses/>.              */
+/*                                                                            */
+/******************************************************************************/
+
+/*
+normal
+    normal
+    non-editable
+    editable-error
+    non-editable-error
+
+automatic
+    automatic-editable
+    automatic-non-editable
+    automatic-editable-error
+    automatic-non-editable-error
+*/
+
+@define-color error_color #df382c;
+
+/******************************************************************************/
+/* Label                                                                      */
+/******************************************************************************/
+
+label#light {
+    opacity: 0.50;
+    /*color*/
+    /*font-style*/
+}
+
+label#normal {
+    /*color*/
+    /*font-style*/
+}
+
+label#error {
+    color: @error_color;
+    font-style: italic;
+}
+
+label#non-editable {
+    /*color*/
+    /*font-style*/
+}
+
+label#non-editable-error {
+    color: @error_color;
+    font-style: italic;
+}
+
+label#automatic {
+    /*color*/
+    /*font-style*/
+}
+
+label#automatic-error {
+    color: @error_color;
+    font-style: italic;
+}
+
+label#automatic-non-editable {
+    /*color*/
+    /*font-style*/
+}
+
+label#automatic-non-editable-error {
+    color: @error_color;
+    font-style: italic;
+}
