@@ -1,4 +1,5 @@
 # Timbrel
+
 Custom ubuntu ISO creator (cubic fork)
 
 ![Timbrel logo](https://raw.githubusercontent.com/sallecta/timbrel/master/screenshots/timbrel.png)
@@ -14,5 +15,5 @@ sudo apt-get install gir1.2-vte-2.91
 # Run
 
 ```console
-sudo -H pkexec $PWD/cubic.py "$PWD"
+sudo -H $PWD/timbrel.py "$PWD"
 ```
